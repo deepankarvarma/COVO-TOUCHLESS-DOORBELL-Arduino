@@ -1,0 +1,159 @@
+#include <LiquidCrystal.h>
+#include <Adafruit_NeoPixel.h>
+#define PIN 13
+#define NUMPIXELS 48
+const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+float value;
+int tem=A1;
+Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
+int redColor = 0;
+int greenColor = 0;
+int blueColor = 0;
+int pir_sensor = 7;
+int pir_reader;
+void setup() {
+ Serial.begin(9600);
+ pixels.begin();
+ pinMode(7, INPUT_PULLUP);
+ pinMode(13, OUTPUT);
+  lcd.begin(16,2);
+    lcd.setCursor(1,0);
+    lcd.print("COVO TOUCHLESS");
+    lcd.setCursor(4,1);
+    lcd.print("DOORBELL");
+    delay(2000);
+  lcd.clear();
+}
+void loop() {
+    
+   pir_reader = digitalRead(pir_sensor);
+    if (pir_reader ==1) {
+       digitalWrite(13, HIGH);
+        lcd.begin(16,2);
+        lcd.setCursor(5,0);
+        lcd.print("Human");
+      	lcd.setCursor(4,1);
+        lcd.print("Detected");
+      tone(8, 500, 100);
+       delay(300);
+      tone(8, 500, 100);
+ 	    delay(2000);
+        lcd.begin(16,2);
+        lcd.setCursor(0,0);
+    	lcd.print("Initialising.");
+ 	    delay(700);
+   	    lcd.clear();
+    	lcd.print("Initialising..");
+   		delay(1500);
+  		lcd.clear();
+        tone(8, 500, 100);
+        lcd.print("Detecting.");
+    	lcd.setCursor(7,1);
+    	lcd.print("5s");
+ 	    delay(900);
+   	    lcd.clear();
+    	tone(8, 500, 100);
+  	    lcd.print("Detecting..");
+    	lcd.setCursor(7,1);
+    	lcd.print("4s");
+   		delay(900);
+    	lcd.clear();
+    	tone(8, 500, 100);
+    	lcd.print("Detecting...");
+   		 lcd.setCursor(7,1);
+    	lcd.print("3s");
+    	delay(900);
+  		lcd.clear();
+    	tone(8, 500, 100);
+   	 	lcd.print("Detecting....");
+   		 lcd.setCursor(7,1);
+    	lcd.print("2s");
+    	delay(900);
+  		lcd.clear();
+    	tone(8, 500, 100);
+    	lcd.print("Detecting.....");
+   		 lcd.setCursor(7,1);
+    	lcd.print("1s");
+    	delay(1000);
+  		lcd.clear();
+    
+    lcd.print("Temperature(F)");
+  	delay(1000);
+    lcd.setCursor(5,1);
+  	pinMode(tem, INPUT);
+    value = analogRead(tem)*0.004882814;
+  	value = (9*((value-0.5) * 100.0))/5+32;
+  	lcd.print(value);
+    tone(8, 900, 100);
+  	 
+  	delay(2500);
+    lcd.clear();
+    
+    if(value<98.6){
+     // lcd.begin(16, 2);
+      lcd.setCursor(0,0);
+      lcd.print("You are safe.Dont forget to sanitise.");
+      
+      tone(8, 440, 100);
+  	  delay(1500);
+      tone(8, 440, 100);
+  	  delay(1500);
+      tone(8, 440, 100);
+  	  for (int positionCounter = 0; positionCounter < 61; positionCounter++) {
+      lcd.scrollDisplayLeft();
+      // wait a bit:
+      delay(150);  
+      }
+      for (int i=0; i < 48; i++) {
+      pixels.setPixelColor(i, pixels.Color(0,255,0));
+	  pixels.show();
+     }
+      for (int i=0; i < 48; i++) {
+      pixels.setPixelColor(i, pixels.Color(0,0,0));
+	pixels.show();
+    }
+      pir_reader ==0;
+    }
+    else{
+      lcd.setCursor(0,0);
+      lcd.print("You have fever.Please get quarantined");
+      tone(8, 523, 100);
+      delay(269);
+      tone(8, 523, 100);
+      delay(269);
+      tone(8, 523, 100);
+      delay(269);
+      tone(8, 523, 100);
+      delay(269);
+      tone(8, 523, 100);
+      delay(269);
+      tone(8, 523, 100);
+      delay(269);
+      tone(8, 523, 100);
+      delay(269);
+      for (int positionCounter = 0; positionCounter < 61; positionCounter++) {
+      lcd.scrollDisplayLeft();
+      // wait a bit:
+      delay(150);  
+      }
+	for (int i=0; i < 48; i++) {
+    pixels.setPixelColor(i, pixels.Color(255,0,0));
+	pixels.show();
+    }
+      for (int i=0; i < 48; i++) {
+      pixels.setPixelColor(i, pixels.Color(0,0,0));
+	pixels.show();
+    }
+      pir_reader ==0;
+    }
+    }
+  else{
+    lcd.begin(16,2);
+    lcd.setCursor(4,0);
+    lcd.print("There is");
+    lcd.setCursor(4,1);
+    lcd.print("No Human");
+    delay(1500);
+  }
+}

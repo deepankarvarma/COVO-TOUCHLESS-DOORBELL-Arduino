@@ -1,0 +1,160 @@
+#include <LiquidCrystal.h>// included LCD Display library
+#include <Adafruit_NeoPixel.h>// included NeoPixel Strip Library
+#define PIN 13 // defined pin where the NeoPixel strip has been connected
+#define NUMPIXELS 48 // number of LEDs in neopixel strip
+const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2; //defined the digital pins where LCD Display ports are connected
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7);//assigning the values to the LCD 
+float value;
+int tem=A1;//analog pin for temperature sensor
+Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);//Declared NeoPixel strip object
+int redColor = 0;//means initially no red colour in the neopixel strip
+int greenColor = 0;
+int blueColor = 0;
+int pir_sensor = 7;//defined a variable to define the digital pin where the pir sensor is connected
+int pir_reader;
+void setup() {
+ Serial.begin(9600);//This starts serial communication, so that the Arduino can send out commands through the USB connection
+//The value 9600 is called the 'baud rate' of the connection. This is how fast the data is to be sent.
+ pixels.begin();//configured neopixel strip for the output
+ pinMode(7, INPUT_PULLUP);//initialized digital pin 7 as an input with the internal pull-up resistor enabled
+ pinMode(13, OUTPUT);//made pin 13 as the output
+  lcd.begin(16,2);//Initializes the interface to the LCD screen, and specifies the dimensions (width and height) of the display
+    lcd.setCursor(1,0);//we have set the cursor to 1st column , 0th row(1st row)
+    lcd.print("COVO TOUCHLESS");
+    lcd.setCursor(4,1);//we have set the cursor to 4st column , 1th row(2nd row)
+    lcd.print("DOORBELL");
+    delay(2000);
+  lcd.clear();//Clears the LCD screen and positions the cursor in the upper-left corner.
+}
+void loop() {
+    
+   pir_reader = digitalRead(pir_sensor);//we have read the digital value of the pirsensor connected to 7th digital pin
+    if (pir_reader ==1) {     the pirsensor is in its field 
+       digitalWrite(13, HIGH);//switch the push button on
+        lcd.begin(16,2);
+        lcd.setCursor(5,0);
+        lcd.print("Human");
+      	lcd.setCursor(4,1);
+        lcd.print("Detected");
+      tone(8, 500, 100);//tone(pin, frequency, duration)
+       delay(300);
+      tone(8, 500, 100);
+ 	    delay(2000);
+        lcd.begin(16,2);
+        lcd.setCursor(0,0);
+    	lcd.print("Initialising.");
+ 	    delay(700);
+   	    lcd.clear();
+    	lcd.print("Initialising..");
+   		delay(1500);
+  		lcd.clear();
+        tone(8, 500, 100);
+        lcd.print("Detecting.");
+    	lcd.setCursor(7,1);
+    	lcd.print("5s");
+ 	    delay(900);
+   	    lcd.clear();
+    	tone(8, 500, 100);
+  	    lcd.print("Detecting..");
+    	lcd.setCursor(7,1);
+    	lcd.print("4s");
+   		delay(900);
+    	lcd.clear();
+    	tone(8, 500, 100);
+    	lcd.print("Detecting...");
+   		 lcd.setCursor(7,1);
+    	lcd.print("3s");
+    	delay(900);
+  		lcd.clear();
+    	tone(8, 500, 100);
+   	 	lcd.print("Detecting....");
+   		 lcd.setCursor(7,1);
+    	lcd.print("2s");
+    	delay(900);
+  		lcd.clear();
+    	tone(8, 500, 100);
+    	lcd.print("Detecting.....");
+   		 lcd.setCursor(7,1);
+    	lcd.print("1s");
+    	delay(1000);
+  		lcd.clear();
+    
+    lcd.print("Temperature(F)");
+  	delay(1000);
+    lcd.setCursor(5,1);
+  	pinMode(tem, INPUT);//giving value at the A1 pin as the input
+    value = analogRead(tem)*0.004882814;//// reading the sensor value and convert it to voltage
+  	value = (9*((value-0.5) * 100.0))/5+32;//temp formula
+  	lcd.print(value);
+    tone(8, 900, 100);
+  	 
+  	delay(2500);
+    lcd.clear();
+    
+    if(value<98.6){
+     // lcd.begin(16, 2);
+      lcd.setCursor(0,0);
+      lcd.print("You are safe.Dont forget to sanitise.");
+      
+      tone(8, 440, 100);
+  	  delay(1500);
+      tone(8, 440, 100);
+  	  delay(1500);
+      tone(8, 440, 100);
+  	  for (int positionCounter = 0; positionCounter < 61; positionCounter++) {
+      lcd.scrollDisplayLeft();
+      
+      delay(150);  
+      }
+      for (int i=0; i < 48; i++) {
+      pixels.setPixelColor(i, pixels.Color(0,255,0));//rgb
+	  pixels.show();
+     }
+      for (int i=0; i < 48; i++) {
+      pixels.setPixelColor(i, pixels.Color(0,0,0));
+	pixels.show();
+    }
+      pir_reader ==0;
+    }
+    else{
+      lcd.setCursor(0,0);
+      lcd.print("You have fever.Please get quarantined");
+      tone(8, 523, 100);
+      delay(269);
+      tone(8, 523, 100);
+      delay(269);
+      tone(8, 523, 100);
+      delay(269);
+      tone(8, 523, 100);
+      delay(269);
+      tone(8, 523, 100);
+      delay(269);
+      tone(8, 523, 100);
+      delay(269);
+      tone(8, 523, 100);
+      delay(269);
+      for (int positionCounter = 0; positionCounter < 61; positionCounter++) {
+      lcd.scrollDisplayLeft();
+      // wait a bit:
+      delay(150);  
+      }
+	for (int i=0; i < 48; i++) {
+    pixels.setPixelColor(i, pixels.Color(255,0,0));
+	pixels.show();
+    }
+      for (int i=0; i < 48; i++) {
+      pixels.setPixelColor(i, pixels.Color(0,0,0));
+	pixels.show();
+    }
+      pir_reader ==0;
+    }
+    }
+  else{
+    lcd.begin(16,2);
+    lcd.setCursor(4,0);
+    lcd.print("There is");
+    lcd.setCursor(4,1);
+    lcd.print("No Human");
+    delay(1500);
+  }
+}
